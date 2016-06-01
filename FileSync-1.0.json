@@ -10,7 +10,7 @@
     "version": "1.0",
     "type": "php",
     "homepage": "http://docs.jelastic.com/file-synchronization",
-    "logo": "https://raw.githubusercontent.com/JelasticJPS/FileSync/master/images/icon.pngd",
+    "logo": "https://raw.githubusercontent.com/JelasticJPS/FileSync/master/images/icon.png",
     "description": "Lsyncd is a light-weight, live mirror solution used to synchronize app servers. Performs files synchronization between multiple application server instances for the project.<br>Use the options below to:<ul style=\"list-style: inherit; margin-left: 3%\"><li>choose the required environment</li><li>specify Path to the folder you’d like to sync (otherwise, the whole webroot directory will be synchronized)</li><li>state the sync delay in seconds.</li><li>set any password (it should be same on both environments)</li></ul>",
     "settings": {
       "fields": [
