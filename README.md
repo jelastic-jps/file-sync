@@ -1,7 +1,6 @@
 # Jelastic File Synchronization Add-on
 
 This repository provides [File Synchronization](http://docs.jelastic.com/file-synchronization) add-on for Jelastic Platform.
-[![GET IT HOSTED](https://raw.githubusercontent.com/JelasticJPS/FileSync/master/images/getithosted.png)](http://go.jelastic.com/test?hoster-select=1&theme=modern&app=https://raw.githubusercontent.com/JelasticJPS/FileSync/master/FileSync-1.0.json)
 
 **File Synchronization** is an add-on for Jelastic Platform for sync files between cp nodes etc.
 
