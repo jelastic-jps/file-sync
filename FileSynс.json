@@ -170,6 +170,18 @@
         "id": "installRsyncDaemon",
         "onCall": [
           {
+            "forEach(node:env.nodes)": {
+              "execCmd": {
+                "nodeGroup": "cp",
+                "commands": [
+                  "[ -f /home/1.txt ] && touch /home/1.txt",
+                  "echo '${@} - ${@node.intIP}' >> /home/1.txt"
+                ],
+                "user": "root"
+              }
+            },
+          },
+          {
             "executeScript": {
               "description": "Get compute nodes Ids and mirrors compute node's address for rsync",
               "type": "javascript",
