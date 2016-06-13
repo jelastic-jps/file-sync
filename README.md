@@ -12,7 +12,8 @@ With a help of our bookmarklet, lsyncd is automatically installed on each app se
 
 One of two initial options can be selected:
 - One environment synchronization;
-- Two environments synchronization.</br>
+- Two environments synchronization.<br/>
+
 Sync path and delay (in sec) parameters can be selected for both options and two optional parameters for second option: IP address of any node from second environment and random password which will use to access to both environments.
 	
 For more information on what File Synchronization Add-on can be used for, follow the [Lsyncd](https://docs.jelastic.com/file-synchronization) reference.
