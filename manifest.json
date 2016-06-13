@@ -1,7 +1,7 @@
 {
 	"jpsType": "update",
 	"application": {
-		"logo": "https://raw.githubusercontent.com/JelasticJPS/Lsyncd/master/images/icon.png",
+		"logo": "https://raw.githubusercontent.com/JelasticJPS/FileSync/master/images/icon.png",
 		"onUninstall": {
 			"call": "removeLsyncd"
 		},
@@ -119,7 +119,7 @@
 						"executeScript": {
 							"description": "Get compute nodes Ids and mirrors compute node's address for rsync",
 							"type": "javascript",
-							"script": "https://raw.githubusercontent.com/JelasticJPS/Lsyncd/master/scripts/installRsyncDaemon.js"
+							"script": "https://raw.githubusercontent.com/JelasticJPS/FileSync/master/scripts/installRsyncDaemon.js"
 						}
 					}
 				]
@@ -141,13 +141,13 @@
 						"upload": [{
 								"nodeId": "${this.nodeId}",
 								"destPath": "${SERVER_WEBROOT}/lsyncd/sync.tar",
-								"sourcePath": "https://raw.githubusercontent.com/JelasticJPS/Lsyncd/master/dumps/sync2.tar.gz"
+								"sourcePath": "https://raw.githubusercontent.com/JelasticJPS/FileSync/master/dumps/sync2.tar.gz"
 							}
 						]
 					}, {
 						"executeShellCommands": [{
 								"nodeId": "${this.nodeId}",
-								"commands": ["tar -xf ${SERVER_WEBROOT}/lsyncd/sync.tar -C ${SERVER_WEBROOT}/lsyncd/", "CUSTOM_PATH=$(cat /tmp/.lsyncd/custom_path)", "[ $CUSTOM_PATH ] && [ ${CUSTOM_PATH:0:1} == \"/\" ] && CUSTOM_PATH=${CUSTOM_PATH:1}", "[ $CUSTOM_PATH ] && [ ${CUSTOM_PATH:${#CUSTOM_PATH}-1} == \"/\" ] && CUSTOM_PATH=$(echo ${CUSTOM_PATH::-1}) ", "[ $CUSTOM_PATH ] && CUSTOM_PATH=${CUSTOM_PATH}/ || CUSTOM_PATH=\"\" ", "sed -i \"s|{SERVER_WEBROOT}|${SERVER_WEBROOT}/${CUSTOM_PATH}|g\" ${SERVER_WEBROOT}/lsyncd/etc/lsyncd.conf", "sed -i \"s|{LSYNCD_TMP}|lsyncd_tmp/|g\" ${SERVER_WEBROOT}/lsyncd/etc/lsyncd.conf", "sed -i \"s|{DELAY}|${settings.delay}|g\" ${SERVER_WEBROOT}/lsyncd/etc/lsyncd.conf", "sed -i \"s|{SERVER_WEBROOT}|${SERVER_WEBROOT}/${CUSTOM_PATH}|g\" ${SERVER_WEBROOT}/lsyncd/etc/rsync.conf", "sed -i \"s|--temp-dir=/|--temp-dir=/lsyncd_tmp|g\" ${SERVER_WEBROOT}/lsyncd/etc/lsyncd.conf", "curl \"https://raw.githubusercontent.com/JelasticJPS/Lsyncd/master/scripts/checkROOTZDT.sh\" -o  ${SERVER_WEBROOT}/zdt.sh 2>&1", "bash ${SERVER_WEBROOT}/zdt.sh ${SERVER_WEBROOT} 2>&1", "rm ${SERVER_WEBROOT}/zdt.sh", "rm -rf ${SERVER_WEBROOT}/${CUSTOM_PATH}lsyncd_tmp", "mkdir ${SERVER_WEBROOT}/${CUSTOM_PATH}lsyncd_tmp", "rm -rf /tmp/lsyncd_tmp", "ln -s /var/www/webroot/${CUSTOM_PATH}lsyncd_tmp/ /tmp/"]
+								"commands": ["tar -xf ${SERVER_WEBROOT}/lsyncd/sync.tar -C ${SERVER_WEBROOT}/lsyncd/", "CUSTOM_PATH=$(cat /tmp/.lsyncd/custom_path)", "[ $CUSTOM_PATH ] && [ ${CUSTOM_PATH:0:1} == \"/\" ] && CUSTOM_PATH=${CUSTOM_PATH:1}", "[ $CUSTOM_PATH ] && [ ${CUSTOM_PATH:${#CUSTOM_PATH}-1} == \"/\" ] && CUSTOM_PATH=$(echo ${CUSTOM_PATH::-1}) ", "[ $CUSTOM_PATH ] && CUSTOM_PATH=${CUSTOM_PATH}/ || CUSTOM_PATH=\"\" ", "sed -i \"s|{SERVER_WEBROOT}|${SERVER_WEBROOT}/${CUSTOM_PATH}|g\" ${SERVER_WEBROOT}/lsyncd/etc/lsyncd.conf", "sed -i \"s|{LSYNCD_TMP}|lsyncd_tmp/|g\" ${SERVER_WEBROOT}/lsyncd/etc/lsyncd.conf", "sed -i \"s|{DELAY}|${settings.delay}|g\" ${SERVER_WEBROOT}/lsyncd/etc/lsyncd.conf", "sed -i \"s|{SERVER_WEBROOT}|${SERVER_WEBROOT}/${CUSTOM_PATH}|g\" ${SERVER_WEBROOT}/lsyncd/etc/rsync.conf", "sed -i \"s|--temp-dir=/|--temp-dir=/lsyncd_tmp|g\" ${SERVER_WEBROOT}/lsyncd/etc/lsyncd.conf", "curl \"https://raw.githubusercontent.com/JelasticJPS/FileSync/master/scripts/checkROOTZDT.sh\" -o  ${SERVER_WEBROOT}/zdt.sh 2>&1", "bash ${SERVER_WEBROOT}/zdt.sh ${SERVER_WEBROOT} 2>&1", "rm ${SERVER_WEBROOT}/zdt.sh", "rm -rf ${SERVER_WEBROOT}/${CUSTOM_PATH}lsyncd_tmp", "mkdir ${SERVER_WEBROOT}/${CUSTOM_PATH}lsyncd_tmp", "rm -rf /tmp/lsyncd_tmp", "ln -s /var/www/webroot/${CUSTOM_PATH}lsyncd_tmp/ /tmp/"]
 							}
 						]
 					}, {
@@ -206,7 +206,7 @@
 								"commands": ["cd ${SERVER_WEBROOT}/lsyncd/", "chmod 600 etc/rsyncd.pass", "chmod 600 etc/rsyncd.secrets", "chmod 755 usr/bin/lsyncd", "killall -9 lsyncd 2>/dev/null 1>/dev/null", "killall -9 rsync 2>/dev/null 1>/dev/null", "/usr/bin/rsync --daemon --config=${SERVER_WEBROOT}/lsyncd/etc/rsync.conf --port=7755 &>>${SERVER_WEBROOT}/lsyncd/var/log/rsyncd_start.log & echo $! > ${SERVER_WEBROOT}/lsyncd/bg.pid", "[ ${settings.password} ] && password=${settings.password} || password=${user.appPassword}; echo ${password} > ${SERVER_WEBROOT}/lsyncd/etc/rsyncd.pass; echo \"admin:${password}\" > ${SERVER_WEBROOT}/lsyncd/etc/rsyncd.secrets"]
 							}, {
 								"nodeId": "${nodes.cp[0].id}",
-								"commands": ["curl -fsS \"https://raw.githubusercontent.com/JelasticJPS/Lsyncd/master/scripts/twoEnvs.sh\" -o ${SERVER_WEBROOT}/addSecondEnv.sh 2>&1", "bash -x ${SERVER_WEBROOT}/addSecondEnv.sh \"${settings.address}\" 2>&1 1>>/tmp/.lsyncd/2Env.log", "rm -f ${SERVER_WEBROOT}/addSecondEnv.sh"]
+								"commands": ["curl -fsS \"https://raw.githubusercontent.com/JelasticJPS/FileSync/master/scripts/twoEnvs.sh\" -o ${SERVER_WEBROOT}/addSecondEnv.sh 2>&1", "bash -x ${SERVER_WEBROOT}/addSecondEnv.sh \"${settings.address}\" 2>&1 1>>/tmp/.lsyncd/2Env.log", "rm -f ${SERVER_WEBROOT}/addSecondEnv.sh"]
 							}
 						]
 					}
