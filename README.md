@@ -1,33 +1,24 @@
 # Jelastic File Synchronization Add-on
 
-This repository provides [File Synchronization](http://docs.jelastic.com/file-synchronization) add-on for Jelastic Platform.
+This repository provides [Lsyncd](http://docs.jelastic.com/file-synchronization/) add-on for Jelastic Platform.
 
-**File Synchronization** is an add-on for Jelastic Platform for sync files between cp nodes etc.
+**Lsyncd** is a light-weight, live mirror solution used to synchronize app servers. Being wisely coupled with [**inotify**](http://en.wikipedia.org/wiki/Inotify), lsyncd initiates file sync only if it has detected any actual changes in the system. In such a way, the load on CPU is decreased and you do not burn up many resources on processing the synchronization.
 
 **Type of nodes this add-on can be applied to**: 
-- for all types of nodes ("cp" nodeGroup)
+- Application server (cp).
 
-### What it can be used for? 
-Sync files between cp nodes, reconfiguration after adding / removing nodes.
-<br />
-Install only on "cp" layer.
+### What it can be used for?
+With a help of our bookmarklet, lsyncd is automatically installed on each app server available in the environment. Before its installation, you will be asked to choose the folders you want to synchronize. As a result, when a change is made in the chosen folders on any of the app servers, those changes will be synced to each server node automatically.
 
+One of two initial options can be selected:
+- One environment synchronization;
+- Two environments synchronization.</br>
+Sync path and delay (in sec) parameters can be selected for both options and two optional parameters for second option: IP address of any node from second environment and random password which will use to access to both environments.
+	
+For more information on what File Synchronization Add-on can be used for, follow the [Lsyncd](https://docs.jelastic.com/file-synchronization) reference.
 
-### What Jelastic add-on is?
+In order to get this solution instantly installed at your environment, click on the button below, specify your Jelastic account email address and required [Jelastic Public Cloud provider](https://jelastic.cloud) in the opened page and select **Install**:
 
-Jelastic add-on represents a package with a kind of a patch, that can be applied to an environment in order to improve and complement its functionality. The full list of the available at a platform add-ons can be seen at the corresponding same-named section of [Jelastic Marketplace](https://docs.jelastic.com/marketplace#add-ons].
+![GET IT HOSTED](https://raw.githubusercontent.com/JelasticJPS/jpswiki/master/images/getithosted.png)
 
-### How to install an add-on?
-###### For Developers
-
-In case you can’t find the desired package within the list of available ones, copy and save the content of add-on’s manifest as a *.json* file and [import](https://docs.jelastic.com/environment-export-import#import) it to the dashboard. Herewith, you can apply any necessary adjustments to an add-on through this file (if such are required) and install its customized version in the similar way.
-
-###### For Cluster Admins
-
-In order to add the desired add-on to your platform and make it available for users, perform the following:
-- copy content of its manifest 
-- switch to the [Marketplace](http://ops-docs.jelastic.com/marketplace-46) section of your JCA panel and choose **Add > Add-on** menu option
-- paste the copied strings into the appeared frame and **Save** the template
-- choose your newly added add-on within the list and click on **Publish** above
-
-Also, you are able to adjust the given add-on template according to your needs and provide its customized version.
+For more information on what Jelastic add-on is and how to apply it, follow the [Jelastic Add-ons](https://github.com/JelasticJPS/jpswiki/wiki/Jelastic-Addons) reference.
