@@ -1,4 +1,4 @@
-# Jelastic File Synchronization Add-on
+## File Synchronization Add-on
 
 This repository provides [Lsyncd](http://docs.jelastic.com/file-synchronization/) add-on for Jelastic Platform.
 
@@ -17,6 +17,8 @@ One of two initial options can be selected:
 Sync path and delay (in sec) parameters can be selected for both options and two optional parameters for second option: IP address of any node from second environment and random password which will use to access to both environments.
 	
 For more information on what File Synchronization Add-on can be used for, follow the [Lsyncd](https://docs.jelastic.com/file-synchronization) reference.
+
+### Deployment
 
 In order to get this solution instantly installed at your environment, click on the button below, specify your Jelastic account email address and required [Jelastic Public Cloud provider](https://jelastic.cloud) in the opened page and select **Install**:
 
