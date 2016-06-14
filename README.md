@@ -22,6 +22,6 @@ For more information on what File Synchronization Add-on can be used for, follow
 
 In order to get this solution instantly installed at your environment, click on the button below, specify your Jelastic account email address and required [Jelastic Public Cloud provider](https://jelastic.cloud) in the opened page and select **Install**:
 
-![GET IT HOSTED](https://raw.githubusercontent.com/JelasticJPS/jpswiki/master/images/getithosted.png)
+![GET IT HOSTED](https://raw.githubusercontent.com/jelastic-jps/jpswiki/master/images/getithosted.png)
 
-For more information on what Jelastic add-on is and how to apply it, follow the [Jelastic Add-ons](https://github.com/JelasticJPS/jpswiki/wiki/Jelastic-Addons) reference.
+For more information on what Jelastic add-on is and how to apply it, follow the [Jelastic Add-ons](https://github.com/jelastic-jps/jpswiki/wiki/Jelastic-Addons) reference.
