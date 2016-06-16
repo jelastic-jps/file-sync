@@ -1,4 +1,4 @@
-[![File Synchronization](../../raw/master/images/icon.png)](../../../FileSync)
+[![File Synchronization](../../raw/master/images/ilustration.png)](../../../FileSync)
 ## Jelastic File Synchronization Add-on
 
 This repository provides [Lsyncd](http://docs.jelastic.com/file-synchronization/) add-on for Jelastic Platform.
