@@ -1,42 +1,92 @@
-import com.hivext.api.environment.Environment;
-  
-var NODE_MISSION_COMPUTE = "cp",
-    PROCEDURE_PROCESS_NODE = "installLsync",
-    APPID = hivext.local.getParam("TARGET_APPID"),
-    SESSION = hivext.local.getParam("session"),
-    callArgs,
-    env,
-    envInfoResponse;
+// @settingsPath
+// @secondEnvAddress
+// @syncPassword
 
-env = hivext.local.exp.wrapRequest(new Environment(APPID, SESSION));
-envInfoResponse = env.getEnvInfo();
-str  = env.getEnvInfo();
-if (!envInfoResponse.isOK()) {
+var NODE_GROUP_COMPUTE = "cp",
+    PROCEDURE_PROCESS_NODE = "installLsync",
+    APPID = getParam("TARGET_APPID"),
+    SESSION = getParam("session"),
+    callArgs = [],
+    env,
+    nodes,
+    i, j,
+    n,
+    softNode,
+    sServerWebroot,
+    user = "",
+    computeNodes = [],
+    aCpItemEnvs = [],
+    envInfoResponse,
+    syncPassword = "${settings.password}",
+    secondAddress = "${settings.address}",
+    settingsPath = "${settings.path}";
+
+if (syncPassword.indexOf("{settings.password}") != -1) {
+    syncPassword = "";
+}
+
+if (secondAddress.indexOf("{settings.address}") != -1) {
+    secondAddress = "";
+}
+
+if (settingsPath.indexOf("{settings.path}") == -1) {
+    settingsPath = "/";
+}
+
+envInfoResponse = jelastic.environment.control.GetEnvInfo(APPID, SESSION);
+
+if (envInfoResponse.result != 0) {
     return envInfoResponse;
 }
 
-var nodes = envInfoResponse.getNodes();
-var iterator = nodes.iterator();
-var computeNodes = [];
-  
-while(iterator.hasNext()) {
-    var softNode = iterator.next();
-    var softNodeProperties = softNode.getProperties();
-      
-    if (NODE_MISSION_COMPUTE.equals(softNodeProperties.getNodeMission())) {
-        computeNodes.push(softNode);
+nodes = envInfoResponse.nodes;
+
+for (i = 0, n = nodes.length; i < n; i += 1) {
+
+    if (NODE_GROUP_COMPUTE == nodes[i].nodeGroup) {
+        computeNodes.push(nodes[i]);
     }
 }
 
-callArgs = [];
+if (settingsPath == "/") {
+    lsyncdPath = "${SERVER_WEBROOT}/";
+
+	if (lsyncdPath.indexOf('SERVER_WEBROOT') != -1 && computeNodes[0].type == "DOCKERIZED") {
+	    
+	    if (!computeNodes[0].engines) {
+	        
+    		aCpItemEnvs = computeNodes[0].customitem.dockerManifest.env;
+    
+    		for (j = 0; aCpItemEnvs[j]; j += 1) {
+    		    
+    			if (aCpItemEnvs[j].indexOf('WEBROOT') != -1) {
+    			    
+    				sServerWebroot = aCpItemEnvs[j].replace('WEBROOT=', '');
+    				lsyncdPath = sServerWebroot + '/';
+    				break;
+    			}
+    		}
+	    }
+	}
+} else {
+    lsyncdPath = settingsPath;
+}
+
+user = "jelastic";
+
 for (var i = 0, n = computeNodes.length; i < n; i += 1) {
-    var mirrorServerIp = computeNodes[(i + 1) === computeNodes.length ? 0 : i + 1].getAddress();
+    var mirrorServerIp = computeNodes[(i + 1) === computeNodes.length ? 0 : i + 1].address;
 
     callArgs.push({
         procedure : PROCEDURE_PROCESS_NODE,
         params : {
-            nodeId : computeNodes[i].getId(),
-            mirrorServerIp : mirrorServerIp
+            nodeId : computeNodes[i].id,
+            mirrorServerIp : mirrorServerIp,
+            settingsPath : settingsPath,
+            secondEnvAddress : secondAddress,
+            syncPassword : syncPassword,
+            lsyncdPath : lsyncdPath,
+            user : user
         }
     });
 
