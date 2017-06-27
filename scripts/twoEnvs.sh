@@ -3,11 +3,13 @@ EXT_IP=$1
 
 if [ -n "${EXT_IP}" ];
 then
+settingsPath=$2
+lsyncdPath=$3
 echo "sync {
 		default.rsync,
-		source=\"/var/www/webroot/\",
+		source=\"${lsyncdPath}${settingsPath}\",
                 target=\"rsync://admin@"${EXT_IP}"/varwwwwebroot\",
-		delay='10',
+		delay=10,
                 delete='running',
 		exclude = {
 		  \"lsyncd/\",
@@ -21,5 +23,5 @@ echo "sync {
 					\"--port=7755\",\"--password-file=/var/www/webroot/lsyncd/etc/rsyncd.pass\", \"--temp-dir=/lsyncd_tmp\"
 				},
 			}
-		}" >> /var/www/webroot/lsyncd/etc/lsyncd.conf;
+		}" >> ${lsyncdPath}/lsyncd/etc/lsyncd.conf;
 fi
