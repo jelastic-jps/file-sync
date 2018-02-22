@@ -73,7 +73,7 @@ if (settingsPath == "/") {
         settingsPath = settingsPath.replace('${SERVER_WEBROOT}', '');
     }
 
-    lsyncdPath = "${SERVER_WEBROOT}";
+    lsyncdPath = "${SERVER_WEBROOT}/";
 }
 
 user = "jelastic";
