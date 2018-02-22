@@ -172,10 +172,10 @@
                   "rm -rf ${this.lsyncdPath}lsyncd; mkdir -p ${this.lsyncdPath}lsyncd",
                   "curl \"https://raw.githubusercontent.com/jelastic-jps/file-sync/master/dumps/sync2.tar.gz\" -o  ${this.lsyncdPath}lsyncd/sync.tar",
                   "tar -xf ${this.lsyncdPath}lsyncd/sync.tar -C ${this.lsyncdPath}lsyncd/",
-                  "sed -i \"s|{SERVER_WEBROOT}|${this.lsyncdPath}|g\" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf",
+                  "sed -i \"s|{SERVER_WEBROOT}|${this.lsyncdPath}${this.settingsPath}|g\" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf",
                   "sed -i \"s|{LSYNCD_TMP}|lsyncd_tmp/|g\" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf",
                   "sed -i \"s|{DELAY}|${settings.delay}|g\" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf",
-                  "sed -i \"s|{SERVER_WEBROOT}|${this.lsyncdPath}|g\" ${this.lsyncdPath}lsyncd/etc/rsync.conf",
+                  "sed -i \"s|{SERVER_WEBROOT}|${this.lsyncdPath}${this.settingsPath}|g\" ${this.lsyncdPath}lsyncd/etc/rsync.conf",
                   "sed -i \"s|--temp-dir=/|--temp-dir=/lsyncd_tmp|g\" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf",
                   "curl \"https://raw.githubusercontent.com/jelastic-jps/file-sync/master/scripts/checkROOTZDT.sh\" -o  ${this.lsyncdPath}/zdt.sh 2>&1",
                   "bash ${this.lsyncdPath}zdt.sh ${this.lsyncdPath} 2>&1",
@@ -249,7 +249,7 @@
               },
               {
                 "commands": [
-                  "${this.lsyncdPath}lsyncd/usr/bin/lsyncd ${this.lsyncdPath}lsyncd/etc/lsyncd.conf &>>${this.lsyncdPath}lsyncd/var/log/lsyncd_start.log"
+                  "[ -d '${this.lsyncdPath}${this.settingsPath}' ] && (${this.lsyncdPath}lsyncd/usr/bin/lsyncd ${this.lsyncdPath}lsyncd/etc/lsyncd.conf &>>${this.lsyncdPath}lsyncd/var/log/lsyncd_start.log) || echo 0"
                 ],
                 "nodeId": "${this.nodeId}"
               },
