@@ -29,7 +29,7 @@ if (secondAddress.indexOf("{settings.address}") != -1) {
     secondAddress = "";
 }
 
-if (settingsPath.indexOf("{settings.path}") == -1) {
+if (settingsPath.indexOf("{settings.path}") != -1) {
     settingsPath = "/";
 }
 
@@ -69,7 +69,7 @@ if (settingsPath == "/") {
 	    }
 	}
 } else {
-    lsyncdPath = settingsPath;
+    lsyncdPath = "${SERVER_WEBROOT}/" + settingsPath;
 }
 
 user = "jelastic";
