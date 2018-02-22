@@ -69,7 +69,11 @@ if (settingsPath == "/") {
 	    }
 	}
 } else {
-    lsyncdPath = settingsPath;
+    if (settingsPath.indexOf('${SERVER_WEBROOT}') != -1) {
+        settingsPath = settingsPath.replace('${SERVER_WEBROOT}', '');
+    }
+
+    lsyncdPath = "${SERVER_WEBROOT}";
 }
 
 user = "jelastic";
