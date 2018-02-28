@@ -48,31 +48,26 @@ for (i = 0, n = nodes.length; i < n; i += 1) {
     }
 }
 
-if (settingsPath == "/") {
-    lsyncdPath = "${SERVER_WEBROOT}/";
-
-	if (lsyncdPath.indexOf('SERVER_WEBROOT') != -1 && computeNodes[0].type == "DOCKERIZED") {
+if (computeNodes[0].type == "DOCKERIZED") {
+	
+    if (!computeNodes[0].engines) {
+	aCpItemEnvs = computeNodes[0].customitem.dockerManifest.env;
 	    
-	    if (!computeNodes[0].engines) {
-	        
-    		aCpItemEnvs = computeNodes[0].customitem.dockerManifest.env;
-    
-    		for (j = 0; aCpItemEnvs[j]; j += 1) {
-    		    
-    			if (aCpItemEnvs[j].indexOf('WEBROOT') != -1) {
-    			    
-    				sServerWebroot = aCpItemEnvs[j].replace('WEBROOT=', '');
-    				lsyncdPath = sServerWebroot + '/';
-    				break;
-    			}
-    		}
+	    for (j = 0; aCpItemEnvs[j]; j += 1) {
+		    
+		if (aCpItemEnvs[j].indexOf('WEBROOT') != -1) {
+		    sServerWebroot = aCpItemEnvs[j].replace('WEBROOT=', '');
+			lsyncdPath = sServerWebroot + '/';
+			break;
+		}
 	    }
-	}
-} else {
-    settingsPath = settingsPath.replace('${SERVER_WEBROOT}', '');
-    lsyncdPath = "${SERVER_WEBROOT}/";
+    }
 }
-
+			
+if (settingsPath != "/" || settingsPath != "") {
+    settingsPath = settingsPath.replace(lsyncdPath, '');
+}
+	
 user = "jelastic";
 
 for (var i = 0, n = computeNodes.length; i < n; i += 1) {
