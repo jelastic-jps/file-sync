@@ -3,6 +3,9 @@
   "logo": "https://raw.githubusercontent.com/jelastic-jps/file-sync/master/images/icon.png",
   "homepage": "http://docs.jelastic.com/file-synchronization",
   "version": "1.1",
+  "globals": {
+    "syncPass": "${fn.password}"
+  },
   "targetNodes": {
     "nodeType": [
       "apache",
@@ -161,7 +164,7 @@
           "killall -9 lsyncd 2>/dev/null 1>/dev/null",
           "killall -9 rsync 2>/dev/null 1>/dev/null",
           "/usr/bin/rsync --daemon --config=${this.lsyncdPath}lsyncd/etc/rsync.conf --port=7755 &>>${this.lsyncdPath}lsyncd/var/log/rsyncd_start.log & echo $! > ${this.lsyncdPath}lsyncd/bg.pid",
-          "[ ${this.syncPassword} ] && password=${this.syncPassword} || password=${user.appPassword}; echo ${password} > ${this.lsyncdPath}lsyncd/etc/rsyncd.pass; echo \"admin:${password}\" > ${this.lsyncdPath}/lsyncd/etc/rsyncd.secrets"
+          "[ ${this.syncPassword} ] && password=${this.syncPassword} || password=${globals.syncPass}; echo ${password} > ${this.lsyncdPath}lsyncd/etc/rsyncd.pass; echo \"admin:${password}\" > ${this.lsyncdPath}/lsyncd/etc/rsyncd.secrets"
         ]
       },
       {
