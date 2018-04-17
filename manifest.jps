@@ -109,20 +109,32 @@
     "onAfterRemoveNode": "installRsyncDaemon"
   },
   "actions": {
-    "removeLsyncd": {
-      "cmd [cp]": [
-        "killall rsync 2>/dev/null 1>/dev/null",
-        "killall lsyncd 2>/dev/null 1>/dev/null",
-        "rm -rf /var/www/webroot/lsyncd 2>/dev/null 1>/dev/null",
-        "crontab -l | sed \"/lsyncd/d\" | crontab -"
-      ]
-    },
-    "installRsyncDaemon": {
-      "script": {
-        "description": "Get compute nodes Ids and mirrors compute node's address for rsync",
-        "script": "https://raw.githubusercontent.com/jelastic-jps/file-sync/master/scripts/installRsyncDaemon.js"
+    "removeLsyncd": [
+      {
+        "cmd [cp]": [
+          "killall rsync 2>/dev/null 1>/dev/null",
+          "killall lsyncd 2>/dev/null 1>/dev/null",
+          "rm -rf /var/www/webroot/lsyncd 2>/dev/null 1>/dev/null",
+          "crontab -l | sed \"/lsyncd/d\" | crontab -"
+        ]
+      },
+      {
+        "script": "https://raw.githubusercontent.com/jelastic-jps/file-sync/master/scripts/firewallRules.js",
+        "param": "uninstall"
       }
-    },
+    ],
+    "installRsyncDaemon": [
+      {
+        "script": "https://raw.githubusercontent.com/jelastic-jps/file-sync/master/scripts/firewallRules.js",
+        "param": "install"
+      },
+      {
+        "script": {
+          "description": "Get compute nodes Ids and mirrors compute node's address for rsync",
+          "script": "https://raw.githubusercontent.com/jelastic-jps/file-sync/master/scripts/installRsyncDaemon.js"
+        }
+      }
+    ],
     "installLsync": [
       {
         "cmd [${this.nodeId}]": [
