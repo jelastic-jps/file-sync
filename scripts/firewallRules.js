@@ -16,7 +16,7 @@ var PARAM_UNINSTALL = 'uninstall',
 inputRule = {"direction":DIRECTION_IN,"name":SSH,"protocol":ALL,"ports":RSYNC_PORT,"src":ALL,"priority":1080,"action":ALLOW};
 outputRule = {"direction":DIRECTION_OUT,"name":SSH,"protocol":ALL,"ports":RSYNC_PORT,"dst":ALL,"priority":1000,"action":ALLOW};
 
-if (jelastic.environment.security.AddRule){
+if (jelastic.environment.security) {
   if (param == PARAM_INSTALL) {
       
     resp = jelastic.environment.security.AddRule(envName, session, inputRule, CP);
