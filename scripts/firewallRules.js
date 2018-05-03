@@ -39,3 +39,7 @@ function removeRule(InOutBond) {
         }
     }
 }
+
+return {
+    result: 0
+}
