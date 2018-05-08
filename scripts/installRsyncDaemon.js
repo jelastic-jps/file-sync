@@ -13,6 +13,7 @@ var NODE_GROUP_COMPUTE = "cp",
     n,
     softNode,
     sServerWebroot,
+    lsyncdPath,
     user = "",
     computeNodes = [],
     aCpItemEnvs = [],
@@ -63,6 +64,8 @@ if (computeNodes[0].type == "DOCKERIZED") {
 	    }
     }
 }
+
+if (!lsyncdPath) lsyncdPath = "${SERVER_WEBROOT}";
 			
 if (settingsPath != "/" || settingsPath != "") {
     settingsPath = settingsPath.replace(lsyncdPath, '');
