@@ -65,7 +65,7 @@ if (computeNodes[0].type == "DOCKERIZED") {
     }
 }
 
-if (!lsyncdPath) lsyncdPath = "${SERVER_WEBROOT}";
+if (!lsyncdPath) lsyncdPath = "${SERVER_WEBROOT}/";
 			
 if (settingsPath != "/" || settingsPath != "") {
     settingsPath = settingsPath.replace(lsyncdPath, '');
