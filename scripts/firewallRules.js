@@ -38,6 +38,10 @@ function removeRule(InOutBond) {
             return jelastic.environment.security.RemoveRule(envName, session, rules[i].id);
         }
     }
+    
+    return {
+        result: 0
+    }
 }
 
 return {
