@@ -8,6 +8,7 @@ var PARAM_UNINSTALL = 'uninstall',
     ALL = 'ALL',
     CP = 'cp',
     envName = "${env.name}",
+    bFireWallEnabled,
     outputRule,
     inputRule,
     rules,
@@ -17,7 +18,12 @@ inputRule = {"direction":DIRECTION_IN,"name":SSH,"protocol":ALL,"ports":RSYNC_PO
 outputRule = {"direction":DIRECTION_OUT,"name":SSH,"protocol":ALL,"ports":RSYNC_PORT,"dst":ALL,"priority":1000,"action":ALLOW};
 
 if (jelastic.environment.security) {
-  if (param == PARAM_INSTALL) {
+  resp = jelastic.billing.account.GetOwnerQuotas(appid, session, 'firewall.enabled');
+  if (!resp || resp.result !== 0) return resp;
+    
+  bFireWallEnabled = resp.array[0] ? resp.array[0].value : 0;
+    
+  if (bFireWallEnabled && param == PARAM_INSTALL) {
       
     resp = jelastic.environment.security.AddRule(envName, session, inputRule, CP);
     if (!resp || resp.result !== 0) return resp;
