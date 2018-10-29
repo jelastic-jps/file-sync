@@ -4,6 +4,7 @@ var PARAM_UNINSTALL = 'uninstall',
     DIRECTION_IN = 'INPUT',
     RSYNC_PORT = '7755',
     ALLOW = 'ALLOW',
+    FIREWALL = 'FIREWALL',
     SSH = 'SSH',
     ALL = 'ALL',
     CP = 'cp',
@@ -11,7 +12,9 @@ var PARAM_UNINSTALL = 'uninstall',
     bFireWallEnabled,
     outputRule,
     inputRule,
+    oFeatures,
     rules,
+    oTmp,
     resp;
 
 inputRule = {"direction":DIRECTION_IN,"name":SSH,"protocol":ALL,"ports":RSYNC_PORT,"src":ALL,"priority":1080,"action":ALLOW};
@@ -24,10 +27,19 @@ if (jelastic.environment.security) {
   bFireWallEnabled = resp.array[0] ? resp.array[0].value : 0;
     
   if (bFireWallEnabled && param == PARAM_INSTALL) {
-      
-    resp = jelastic.environment.security.AddRule(envName, session, inputRule, CP);
+    resp = jelastic.env.control.GetNodeGroups(envName, session);
     if (!resp || resp.result !== 0) return resp;
-    return jelastic.environment.security.AddRule(envName, session, outputRule, CP);
+      
+    if (resp.object && resp.object[0]) {
+      oTmp = resp.object[0];
+      oFeatures = oTmp.features || "";
+
+      if (oFeatures == FIREWALL || oFeatures.indexOf(FIREWALL) != -1) {
+        resp = jelastic.environment.security.AddRule(envName, session, inputRule, CP);
+        if (!resp || resp.result !== 0) return resp;
+        return jelastic.environment.security.AddRule(envName, session, outputRule, CP);
+      }
+    }
 
   } else if (param == PARAM_UNINSTALL) {
     resp = removeRule(DIRECTION_IN);
