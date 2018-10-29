@@ -32,6 +32,9 @@ if (jelastic.environment.security) {
       
     if (resp.object && resp.object[0]) {
       oTmp = resp.object[0];
+      jelastic.marketplace.console.WriteLog(oTmp.features);
+      jelastic.marketplace.console.WriteLog(oTmp.features);
+        jelastic.marketplace.console.WriteLog(typeof oTmp.features.push === "function");
       aFeatures = oTmp.features ? (typeof oTmp.features.push === "function" ? oTmp.features : [oTmp.features]) : [];
         
       if (aFeatures.indexOf(FIREWALL) != -1) {
