@@ -32,7 +32,7 @@ if (jelastic.environment.security) {
     if (resp.object && resp.object[0]) {
       oTmp = resp.object[0];
         
-      if (oTmp.features && oTmp.features.indexOf(FIREWALL) != -1) {
+      if (oTmp.features && oTmp.features == FIREWALL) {
         resp = jelastic.environment.security.AddRule(envName, session, inputRule, CP);
         if (!resp || resp.result !== 0) return resp;
         return jelastic.environment.security.AddRule(envName, session, outputRule, CP);
