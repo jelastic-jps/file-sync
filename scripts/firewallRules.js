@@ -36,7 +36,8 @@ if (jelastic.environment.security) {
         jelastic.marketplace.console.WriteLog(typeof oTmp.features.push === "function");
       aFeatures = oTmp.features ? (typeof oTmp.features.push === "function" ? oTmp.features : [oTmp.features]) : [];
 
-        jelastic.marketplace.console.WriteLog(aFeatures.indexOf(FIREWALL));
+        jelastic.marketplace.console.WriteLog(aFeatures);
+        jelastic.marketplace.console.WriteLog(typeof aFeatures);
       if (aFeatures.indexOf(FIREWALL) != -1) {
         resp = jelastic.environment.security.AddRule(envName, session, inputRule, CP);
         if (!resp || resp.result !== 0) return resp;
