@@ -12,7 +12,7 @@ var PARAM_UNINSTALL = 'uninstall',
     bFireWallEnabled,
     outputRule,
     inputRule,
-    aFeatures,
+    oFeatures,
     rules,
     oTmp,
     resp;
@@ -32,13 +32,9 @@ if (jelastic.environment.security) {
       
     if (resp.object && resp.object[0]) {
       oTmp = resp.object[0];
-      jelastic.marketplace.console.WriteLog(oTmp.features);
-        jelastic.marketplace.console.WriteLog(typeof oTmp.features.push === "function");
-      aFeatures = oTmp.features ? (typeof oTmp.features.push === "function" ? oTmp.features : [oTmp.features]) : [];
+      oFeatures = oTmp.features || "";
 
-        jelastic.marketplace.console.WriteLog(aFeatures);
-        jelastic.marketplace.console.WriteLog(typeof aFeatures);
-      if (aFeatures.indexOf(FIREWALL) != -1) {
+      if (oFeatures == FIREWALL || oFeatures.indexOf(FIREWALL) != -1) {
         resp = jelastic.environment.security.AddRule(envName, session, inputRule, CP);
         if (!resp || resp.result !== 0) return resp;
         return jelastic.environment.security.AddRule(envName, session, outputRule, CP);
