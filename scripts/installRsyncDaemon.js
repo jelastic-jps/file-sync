@@ -23,7 +23,7 @@ var NODE_GROUP_COMPUTE = "cp",
     settingsPath = "${settings.path}";
 
 if (syncPassword.indexOf("{settings.password}") != -1) {
-    syncPassword = "";
+    syncPassword = "defaultPassword";
 }
 
 if (secondAddress.indexOf("{settings.address}") != -1) {
