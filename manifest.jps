@@ -36,7 +36,7 @@ settings:
     name: optional
     showIf:
       one_env:
-      - placeholder: relative to {WEBROOT}
+      - placeholder: relative to ${WEBROOT} for cp layer or /root for storage
         name: path
         caption: Sync path
         type: string
