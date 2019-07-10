@@ -2,9 +2,10 @@ type: update
 logo: images/icon.png
 homepage: http://docs.jelastic.com/file-synchronization
 version: '1.1'
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/file-sync/master/
+baseUrl: https://raw.githubusercontent.com/dzotic91-ukr/file-sync/master/
 targetNodes:
   nodeType:
+  - storage
   - apache
   - apache2
   - nginxphp
@@ -66,69 +67,68 @@ env:
   onAfterCloneNodes: installRsyncDaemon
   onAfterDeploy: installRsyncDaemon
   onBeforeDeploy:
-    cmd [cp]:
-    - killall -9 lsyncd 2>/dev/null 1>/dev/null
-    - killall -9 rsync 2>/dev/null 1>/dev/null
+    cmd [${targetNodes.nodeGroup}]:
+    - killall rsync lsyncd  2>&1
   onAfterRemoveNode: installRsyncDaemon
 actions:
   removeLsyncd:
-  - cmd [cp]:
-    - killall rsync 2>/dev/null 1>/dev/null
-    - killall lsyncd 2>/dev/null 1>/dev/null
-    - rm -rf /var/www/webroot/lsyncd 2>/dev/null 1>/dev/null
-    - crontab -l | sed "/lsyncd/d" | crontab -
+  - cmd [${targetNodes.nodeGroup}]: |-
+      killall rsync lsyncd 2>&1
+      [ "${targetNodes.nodeGroup}" == "storage" ] && lsyndPath="/data" || lsyndPath="/var/www/webroot"
+      rm -rf ${lsyndPath}/lsyncd* 2>&1
+      crontab -l | sed "/lsyncd/d" | crontab -
   - script: "${baseUrl}scripts/firewallRules.js"
     param: uninstall
   installRsyncDaemon:
-  - script: "${baseUrl}scripts/firewallRules.js"
+  - script: scripts/firewallRules.js
     param: install
   - script:
       description: Get compute nodes Ids and mirrors compute node's address for rsync
-      script: "${baseUrl}scripts/installRsyncDaemon.js"
+      script: scripts/installRsyncDaemon.js
   installLsync:
-  - cmd [${this.nodeId}]:
-    - rm -rf ${this.lsyncdPath}lsyncd; mkdir -p ${this.lsyncdPath}lsyncd
-    - curl "${baseUrl}dumps/sync2.tar.gz" -o  ${this.lsyncdPath}lsyncd/sync.tar
-    - tar -xf ${this.lsyncdPath}lsyncd/sync.tar -C ${this.lsyncdPath}lsyncd/
-    - sed -i "s|{SERVER_WEBROOT}|${this.lsyncdPath}${this.settingsPath}|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
-    - sed -i "s|{LSYNCD_TMP}|lsyncd_tmp/|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
-    - sed -i "s|{DELAY}|${settings.delay}|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
-    - sed -i "s|{SERVER_WEBROOT}|${this.lsyncdPath}/${this.settingsPath}|g" ${this.lsyncdPath}lsyncd/etc/rsync.conf
-    - sed -i "s|--temp-dir=/|--temp-dir=/lsyncd_tmp|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
-    - curl "${baseUrl}scripts/checkROOTZDT.sh" -o  ${this.lsyncdPath}/zdt.sh 2>&1
-    - bash ${this.lsyncdPath}zdt.sh ${this.lsyncdPath} 2>&1
-    - rm ${this.lsyncdPath}zdt.sh
-    - rm -rf ${this.lsyncdPath}lsyncd_tmp
-    - mkdir ${this.lsyncdPath}/${this.settingsPath}/lsyncd_tmp
-    - rm -rf /tmp/lsyncd_tmp
-    - ln -s ${this.lsyncdPath}/${this.settingsPath}/lsyncd_tmp/ /tmp/
-    - sed -i "s|_MIRROR_SERVER_IP|${this.mirrorServerIp}|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
-    - sed -i "s|_USER|admin|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
-    - sed -i "s|_INSTALL_DIRECTORY|${this.lsyncdPath}lsyncd|g" ${this.lsyncdPath}lsyncd/etc/rsync.conf
-    - sed -i "s|apache|${this.user}|g" ${this.lsyncdPath}lsyncd/etc/rsync.conf
-    - sed -i "s|name|varwwwwebroot|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
-    - sed -i "s|_NAME|varwwwwebroot|g" ${this.lsyncdPath}lsyncd/etc/rsync.conf
-    - sed -i "s|_USER|admin|g" ${this.lsyncdPath}lsyncd/etc/rsync.conf
-    - sed -i "s|_USER|admin|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
-    - sed -i "s|_INSTALL_DIRECTORY|${this.lsyncdPath}lsyncd|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
-    - sed -i "s|_USER|admin|g" ${this.lsyncdPath}lsyncd/etc/rsyncd.secrets
-    - sed -i "s|_INSTALL_DIRECTORY|${this.lsyncdPath}lsyncd/|g" ${this.lsyncdPath}lsyncd/init.sh
-  - cmd [${this.nodeId}]:
-    - cd ${this.lsyncdPath}lsyncd/
-    - chmod 600 etc/rsyncd.pass
-    - chmod 600 etc/rsyncd.secrets
-    - chmod 755 usr/bin/lsyncd
-    - chown ${this.user} etc/*
-    - killall -9 lsyncd 2>/dev/null 1>/dev/null
-    - killall -9 rsync 2>/dev/null 1>/dev/null
-    - "/usr/bin/rsync --daemon --config=${this.lsyncdPath}lsyncd/etc/rsync.conf --port=7755 &>>${this.lsyncdPath}lsyncd/var/log/rsyncd_start.log & echo $! > ${this.lsyncdPath}lsyncd/bg.pid"
-    - '[ ${this.syncPassword} ] && password=${this.syncPassword} || password=defaultPassword; echo ${password} > ${this.lsyncdPath}lsyncd/etc/rsyncd.pass; echo "admin:${password}" > ${this.lsyncdPath}/lsyncd/etc/rsyncd.secrets'
-  - cmd [${nodes.cp[0].id}]:
-    - curl -fsS "${baseUrl}scripts/twoEnvs.sh" -o ${this.lsyncdPath}lsyncd/addSecondEnv.sh 2>&1
-    - bash -x ${this.lsyncdPath}lsyncd/addSecondEnv.sh "${this.secondEnvAddress}" "${this.settingsPath}" "${this.lsyncdPath}" 2>&1 ${this.lsyncdPath}lsyncd/2Env.log
-    - rm -rf ${this.lsyncdPath}addSecondEnv.sh
-  - cmd [${this.nodeId}]:
-    - "[ -d '${this.lsyncdPath}${this.settingsPath}' ] && (${this.lsyncdPath}lsyncd/usr/bin/lsyncd ${this.lsyncdPath}lsyncd/etc/lsyncd.conf &>>${this.lsyncdPath}lsyncd/var/log/lsyncd_start.log) || echo 0"
-    - (crontab -l 2>/dev/null | grep -q init.sh ||  {  crontab -l 2>/dev/null | { cat; echo "*/3 * * * *  /bin/bash ${this.lsyncdPath}lsyncd/init.sh check"; } | crontab - ; } ; )
+  - cmd [${this.nodeId}]: |-
+      rm -rf ${this.lsyncdPath}lsyncd; mkdir -p ${this.lsyncdPath}lsyncd
+      curl "${baseUrl}dumps/sync2.tar.gz" -o  ${this.lsyncdPath}lsyncd/sync.tar
+      tar -xf ${this.lsyncdPath}lsyncd/sync.tar -C ${this.lsyncdPath}lsyncd/
+      sed -i "s|{SERVER_WEBROOT}|${this.lsyncdPath}${this.settingsPath}|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
+      sed -i "s|{LSYNCD_TMP}|lsyncd_tmp/|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
+      sed -i "s|{DELAY}|${settings.delay}|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
+      sed -i "s|{SERVER_WEBROOT}|${this.lsyncdPath}/${this.settingsPath}|g" ${this.lsyncdPath}lsyncd/etc/rsync.conf
+      sed -i "s|--temp-dir=/|--temp-dir=/lsyncd_tmp|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
+      curl "${baseUrl}scripts/checkROOTZDT.sh" -o  ${this.lsyncdPath}/zdt.sh 2>&1
+      bash ${this.lsyncdPath}zdt.sh ${this.lsyncdPath} 2>&1
+      rm ${this.lsyncdPath}zdt.sh
+      rm -rf ${this.lsyncdPath}lsyncd_tmp
+      mkdir ${this.lsyncdPath}/${this.settingsPath}/lsyncd_tmp
+      rm -rf /tmp/lsyncd_tmp
+      ln -s ${this.lsyncdPath}/${this.settingsPath}/lsyncd_tmp/ /tmp/
+      sed -i "s|_MIRROR_SERVER_IP|${this.mirrorServerIp}|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
+      sed -i "s|_USER|admin|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
+      sed -i "s|_INSTALL_DIRECTORY|${this.lsyncdPath}lsyncd|g" ${this.lsyncdPath}lsyncd/etc/rsync.conf
+      sed -i "s|apache|${this.user}|g" ${this.lsyncdPath}lsyncd/etc/rsync.conf
+      sed -i "s|name|varwwwwebroot|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
+      sed -i "s|_NAME|varwwwwebroot|g" ${this.lsyncdPath}lsyncd/etc/rsync.conf
+      sed -i "s|_USER|admin|g" ${this.lsyncdPath}lsyncd/etc/rsync.conf
+      sed -i "s|_USER|admin|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
+      sed -i "s|_INSTALL_DIRECTORY|${this.lsyncdPath}lsyncd|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
+      sed -i "s|_USER|admin|g" ${this.lsyncdPath}lsyncd/etc/rsyncd.secrets
+      sed -i "s|_INSTALL_DIRECTORY|${this.lsyncdPath}lsyncd/|g" ${this.lsyncdPath}lsyncd/init.sh
+  - cmd [${this.nodeId}]: |-
+      cd ${this.lsyncdPath}lsyncd/
+      chmod 600 etc/rsyncd.pass etc/rsyncd.secrets
+      chmod 755 usr/bin/lsyncd
+      chown ${this.user} etc/*
+      killall rsync lsyncd 2>&1
+      /usr/bin/rsync --daemon --config=${this.lsyncdPath}lsyncd/etc/rsync.conf --port=7755 &>>${this.lsyncdPath}lsyncd/var/log/rsyncd_start.log & echo $! > ${this.lsyncdPath}lsyncd/bg.pid
+      [ ${this.syncPassword} ] && password=${this.syncPassword} || password=defaultPassword; echo ${password} > ${this.lsyncdPath}lsyncd/etc/rsyncd.pass; echo "admin:${password}" > ${this.lsyncdPath}/lsyncd/etc/rsyncd.secrets
+  - cmd [${this.nodeId}]: |-
+      curl -fsS "${baseUrl}scripts/twoEnvs.sh" -o ${this.lsyncdPath}lsyncd/addSecondEnv.sh 2>&1
+      bash -x ${this.lsyncdPath}lsyncd/addSecondEnv.sh "${this.secondEnvAddress}" "${this.settingsPath}" "${this.lsyncdPath}" 2>&1 ${this.lsyncdPath}lsyncd/2Env.log
+      rm -rf ${this.lsyncdPath}addSecondEnv.sh
+  - cmd [${this.nodeId}]: |-
+      [ -d '${this.lsyncdPath}${this.settingsPath}' ] && (${this.lsyncdPath}lsyncd/usr/bin/lsyncd ${this.lsyncdPath}lsyncd/etc/lsyncd.conf &>>${this.lsyncdPath}lsyncd/var/log/lsyncd_start.log) || echo 0
+      (crontab -l 2>/dev/null | grep -q init.sh ||  {  crontab -l 2>/dev/null | { cat; echo "*/3 * * * *  /bin/bash ${this.lsyncdPath}lsyncd/init.sh check"; } | crontab - ; } ; )
+
 onUninstall: removeLsyncd
+
 success: Lsyncd is installed on your environment.<br>You can find config files and logs at the webroot directory.
