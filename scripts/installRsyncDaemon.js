@@ -7,14 +7,14 @@ var NODE_GROUP_STORAGE = "storage",
     APPID = getParam("TARGET_APPID"),
     SESSION = getParam("session"),
     USER = "jelastic",
-    callArgs = [],
     syncPassword = "${settings.password}",
     secondAddress = "${settings.address}",
     settingsPath = "${settings.path}",
     isStorageNode = false,
     envLsyncdNodes = [],
     aCpItemEnvs = [],
-    envInfoResponse,
+    resp,
+    mirrorServerIp,
     callArgs = [],
     lsyncdPath,
     nodes,
@@ -35,13 +35,11 @@ if (settingsPath.indexOf("{settings.path}") != -1) {
     settingsPath = "/";
 }
 
-envInfoResponse = jelastic.environment.control.GetEnvInfo(APPID, SESSION);
+resp = jelastic.environment.control.GetEnvInfo(APPID, SESSION);
 
-if (envInfoResponse.result != 0) {
-    return envInfoResponse;
-}
+if (resp.result != 0) return resp;
 
-nodes = envInfoResponse.nodes;
+nodes = resp.nodes;
 
 for (i = 0, n = nodes.length; i < n; i += 1) {
     if ("${targetNodes.nodeGroup}" == nodes[i].nodeGroup) {
@@ -65,20 +63,18 @@ if (envLsyncdNodes[0].type == "DOCKERIZED") {
 }
 
 if (!lsyncdPath) {
-    lsyncdPath = isStorageNode ? "/data/" : "${SERVER_WEBROOT}/"
+    lsyncdPath = isStorageNode ? "/data/" : "${SERVER_WEBROOT}/";
 }
-			
+
 if (settingsPath != "/" || settingsPath != "") {
     settingsPath = settingsPath.replace(lsyncdPath, '');
 }
-	
-user = "jelastic";
 
-for (var i = 0, n = envLsyncdNodes.length; i < n; i += 1) {
-    var mirrorServerIp = envLsyncdNodes[(i + 1) === envLsyncdNodes.length ? 0 : i + 1].address;
+for (i = 0, n = envLsyncdNodes.length; i < n; i += 1) {
+    mirrorServerIp = envLsyncdNodes[(i + 1) === envLsyncdNodes.length ? 0 : i + 1].address;
 
     callArgs.push({
-        procedure : PROCEDURE_PROCESS_NODE,
+        action : PROCEDURE_PROCESS_NODE,
         params : {
             nodeId : envLsyncdNodes[i].id,
             mirrorServerIp : mirrorServerIp,
@@ -89,11 +85,11 @@ for (var i = 0, n = envLsyncdNodes.length; i < n; i += 1) {
             user : USER
         }
     });
-} 
+}
 
 return {
     result : 0,
     onAfterReturn : {
         call : callArgs
     }
-}; 
+};
