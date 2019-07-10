@@ -1,8 +1,10 @@
 type: update
 logo: images/icon.png
 homepage: http://docs.jelastic.com/file-synchronization
+
 version: '1.1'
 baseUrl: https://raw.githubusercontent.com/dzotic91-ukr/file-sync/master/
+
 targetNodes:
   nodeType:
   - storage
@@ -15,13 +17,14 @@ targetNodes:
   - tomcat6
   - tomee
   - tomee-dockerized
-description: Lsyncd is a light-weight, live mirror solution used to synchronize app
-  servers. Being wisely coupled with inotify, lsyncd initiates file sync only if it
-  has detected any actual changes in the system. In such a way, the load on CPU is
-  decreased and you do not burn up many resources on processing the synchronization.
+description: Lsyncd is a light-weight, live mirror solution used to synchronize app servers. Being wisely coupled with inotify, lsyncd initiates file sync only if it has detected any actual changes in the system. In such a way, the load on CPU is decreased and you do not burn up many resources on processing the synchronization.
+
 name: File Synchronization
+
 id: file-sync
+
 onInstall: installRsyncDaemon
+
 settings:
   fields:
   - default: one_env
@@ -63,13 +66,17 @@ settings:
         caption: Password
         type: string
     type: radio-fieldset
-env:
-  onAfterCloneNodes: installRsyncDaemon
-  onAfterDeploy: installRsyncDaemon
-  onBeforeDeploy:
-    cmd [${targetNodes.nodeGroup}]:
+
+onAfterCloneNodes: installRsyncDaemon
+
+onAfterDeploy: installRsyncDaemon
+
+onBeforeDeploy:
+  cmd [${targetNodes.nodeGroup}]:
     - killall rsync lsyncd  2>&1
-  onAfterRemoveNode: installRsyncDaemon
+
+onAfterRemoveNode: installRsyncDaemon
+
 actions:
   removeLsyncd:
   - cmd [${targetNodes.nodeGroup}]: |-
@@ -82,9 +89,7 @@ actions:
   installRsyncDaemon:
   - script: scripts/firewallRules.js
     param: install
-  - script:
-      description: Get compute nodes Ids and mirrors compute node's address for rsync
-      script: scripts/installRsyncDaemon.js
+  - script: scripts/installRsyncDaemon.js
   installLsync:
   - cmd [${this.nodeId}]: |-
       rm -rf ${this.lsyncdPath}lsyncd; mkdir -p ${this.lsyncdPath}lsyncd
