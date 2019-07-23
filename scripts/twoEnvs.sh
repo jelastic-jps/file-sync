@@ -8,7 +8,7 @@ lsyncdPath=$3
 grep -q "@"${EXT_IP}"/" ${lsyncdPath}/lsyncd/etc/lsyncd.conf || echo "sync {
 		default.rsync,
 		source=\"${lsyncdPath}${settingsPath}\",
-                target=\"rsync://admin@"${EXT_IP}"/varwwwwebroot\",
+                target=\"rsync://admin@"${EXT_IP}"/secondenvmodule\",
 		delay=10,
                 delete='running',
 		exclude = {
