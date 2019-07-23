@@ -47,7 +47,7 @@ settings:
         type: string
         required: false
       two_envs:
-      - placeholder: relative to ${WEBROOT}
+      - placeholder: relative to ${WEBROOT} for cp layer or /data for storage
         name: path
         caption: Sync path
         type: string
@@ -136,4 +136,4 @@ actions:
 
 onUninstall: removeLsyncd
 
-success: Lsyncd is installed on your environment.<br>You can find config files and logs at the webroot directory.
+success: Lsyncd is installed on your environment.<br>You can find config files and logs at the webroot directory for compute nodes or data directory for storage.
