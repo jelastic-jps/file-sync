@@ -111,8 +111,8 @@ actions:
       sed -i "s|_USER|admin|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
       sed -i "s|_INSTALL_DIRECTORY|${this.lsyncdPath}lsyncd|g" ${this.lsyncdPath}lsyncd/etc/rsync.conf
       sed -i "s|apache|${this.user}|g" ${this.lsyncdPath}lsyncd/etc/rsync.conf
-      sed -i "s|name|varwwwwebroot|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
-      sed -i "s|_NAME|varwwwwebroot|g" ${this.lsyncdPath}lsyncd/etc/rsync.conf
+      sed -i "s|name|syncmodule|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
+      sed -i "s|_NAME|syncmodule|g" ${this.lsyncdPath}lsyncd/etc/rsync.conf
       sed -i "s|_USER|admin|g" ${this.lsyncdPath}lsyncd/etc/rsync.conf
       sed -i "s|_USER|admin|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
       sed -i "s|_INSTALL_DIRECTORY|${this.lsyncdPath}lsyncd|g" ${this.lsyncdPath}lsyncd/etc/lsyncd.conf
