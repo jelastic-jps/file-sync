@@ -5,10 +5,10 @@ if [ -n "${EXT_IP}" ];
 then
 settingsPath=$2
 lsyncdPath=$3
-echo "sync {
+grep -q "@"${EXT_IP}"/" ${lsyncdPath}/lsyncd/etc/lsyncd.conf || echo "sync {
 		default.rsync,
 		source=\"${lsyncdPath}${settingsPath}\",
-                target=\"rsync://admin@"${EXT_IP}"/varwwwwebroot\",
+                target=\"rsync://admin@"${EXT_IP}"/syncmodule\",
 		delay=10,
                 delete='running',
 		exclude = {
@@ -20,7 +20,7 @@ echo "sync {
 			        compress = true,
 			        update = true,
 				_extra = {
-					\"--port=7755\",\"--password-file=/var/www/webroot/lsyncd/etc/rsyncd.pass\", \"--temp-dir=/lsyncd_tmp\"
+					\"--port=7755\",\"--password-file="${lsyncdPath}"lsyncd/etc/rsyncd.pass\", \"--temp-dir=/lsyncd_tmp\"
 				},
 			}
 		}" >> ${lsyncdPath}/lsyncd/etc/lsyncd.conf;

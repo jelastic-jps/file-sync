@@ -8,6 +8,8 @@ var PARAM_UNINSTALL = 'uninstall',
     SSH = 'SSH',
     ALL = 'ALL',
     CP = 'cp',
+    STORAGE = 'storage',
+    LAYER = '${targetNodes.nodeGroup}',
     envName = "${env.name}",
     bFireWallEnabled,
     outputRule,
@@ -35,9 +37,9 @@ if (jelastic.environment.security) {
       oFeatures = oTmp.features || "";
 
       if (oFeatures == FIREWALL || oFeatures.indexOf(FIREWALL) != -1) {
-        resp = jelastic.environment.security.AddRule(envName, session, inputRule, CP);
+        resp = jelastic.environment.security.AddRule(envName, session, inputRule, LAYER);
         if (!resp || resp.result !== 0) return resp;
-        return jelastic.environment.security.AddRule(envName, session, outputRule, CP);
+        return jelastic.environment.security.AddRule(envName, session, outputRule, LAYER);
       }
     }
 
@@ -49,7 +51,7 @@ if (jelastic.environment.security) {
 }
 
 function removeRule(InOutBond) {
-    var rules = jelastic.environment.security.GetRules('${env.name}', session, CP, InOutBond).rules;
+    var rules = jelastic.environment.security.GetRules('${env.name}', session, LAYER, InOutBond).rules;
 
     for (var i = 0; i < rules.length; i ++) {
         if (rules[i].ports == 7755) {
