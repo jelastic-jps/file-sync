@@ -17,6 +17,7 @@ targetNodes:
   - tomcat6
   - tomee
   - tomee-dockerized
+  - litespeedphp
 description: Lsyncd is a light-weight, live mirror solution used to synchronize app servers. Being wisely coupled with inotify, lsyncd initiates file sync only if it has detected any actual changes in the system. In such a way, the load on CPU is decreased and you do not burn up many resources on processing the synchronization.
 
 name: File Synchronization
