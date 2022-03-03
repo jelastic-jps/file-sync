@@ -89,6 +89,7 @@ for (i = 0, n = envLsyncdNodes.length; i < n; i += 1) {
 
 return {
     result : 0,
+    lsyncdPath : lsyncdPath,
     onAfterReturn : {
         call : callArgs
     }
