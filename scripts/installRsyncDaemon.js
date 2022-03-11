@@ -54,7 +54,7 @@ if (envLsyncdNodes[0].type == "DOCKERIZED") {
 
         for (j = 0; aCpItemEnvs[j]; j += 1) {
 
-            if (aCpItemEnvs[j].indexOf('WEBROOT') != -1) {
+            if (/^WEBROOT=/.test(aCpItemEnvs[j])) {
                 lsyncdPath = aCpItemEnvs[j].replace('WEBROOT=', '') + '/';
                 break;
             }
