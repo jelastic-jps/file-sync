@@ -63,7 +63,7 @@ if (envLsyncdNodes[0].type == "DOCKERIZED") {
 }
 
 if (!lsyncdPath) {
-    lsyncdPath = isStorageNode ? "/data/" : "/var/www/webroot/ROOT/";
+    lsyncdPath = isStorageNode ? "/data/" : "${SERVER_WEBROOT}/";
 }
 
 if (settingsPath != "/" || settingsPath != "") {
