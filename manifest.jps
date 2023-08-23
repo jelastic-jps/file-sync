@@ -98,6 +98,9 @@ actions:
   - script: scripts/installRsyncDaemon.js
   installLsync:
   - cmd [${this.nodeId}]: |-
+      grep -a 'AlmaLinux' /etc/system-release && microdnf -y install lsyncd || yum install lsyncd -y;
+    user: root
+  - cmd [${this.nodeId}]: |-
       rm -rf ${this.lsyncdPath}lsyncd; mkdir -p ${this.lsyncdPath}lsyncd
       curl "${baseUrl}dumps/sync2.tar.gz" -o  ${this.lsyncdPath}lsyncd/sync.tar
       tar -xf ${this.lsyncdPath}lsyncd/sync.tar -C ${this.lsyncdPath}lsyncd/
