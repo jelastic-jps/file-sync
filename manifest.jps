@@ -140,7 +140,7 @@ actions:
       bash -x ${this.lsyncdPath}lsyncd/addSecondEnv.sh "${this.secondEnvAddress}" "${this.settingsPath}" "${this.lsyncdPath}" 2>&1 ${this.lsyncdPath}lsyncd/2Env.log
       rm -rf ${this.lsyncdPath}addSecondEnv.sh
   - cmd [${this.nodeId}]: |-
-      [ -d '${this.lsyncdPath}${this.settingsPath}' ] && (${this.lsyncdPath}lsyncd/usr/bin/lsyncd ${this.lsyncdPath}lsyncd/etc/lsyncd.conf &>>${this.lsyncdPath}lsyncd/var/log/lsyncd_start.log) || echo 0
+      [ -d '${this.lsyncdPath}${this.settingsPath}' ] && (/usr/bin/lsyncd ${this.lsyncdPath}lsyncd/etc/lsyncd.conf &>>${this.lsyncdPath}lsyncd/var/log/lsyncd_start.log) || echo 0
       (crontab -l 2>/dev/null | grep -q init.sh ||  {  crontab -l 2>/dev/null | { cat; echo "*/3 * * * *  /bin/bash ${this.lsyncdPath}lsyncd/init.sh check"; } | crontab - ; } ; )
 
 onUninstall: removeLsyncd
