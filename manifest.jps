@@ -130,7 +130,6 @@ actions:
   - cmd [${this.nodeId}]: |-
       cd ${this.lsyncdPath}lsyncd/
       chmod 600 etc/rsyncd.pass etc/rsyncd.secrets
-      chmod 755 usr/bin/lsyncd
       chown ${this.user} etc/*
       killall rsync lsyncd 2>&1
       /usr/bin/rsync --daemon --config=${this.lsyncdPath}lsyncd/etc/rsync.conf --port=7755 &>>${this.lsyncdPath}lsyncd/var/log/rsyncd_start.log & echo $! > ${this.lsyncdPath}lsyncd/bg.pid
