@@ -3,7 +3,7 @@ logo: images/icon.png
 homepage: http://docs.jelastic.com/file-synchronization
 
 version: '1.1'
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/file-sync/JE-67536/
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/file-sync/master/
 
 targetEditions: any
 
