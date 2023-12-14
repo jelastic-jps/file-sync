@@ -12,11 +12,18 @@ targetNodes:
   - storage
   - apache
   - apache2
+  - nodejs
+  - apache-ruby
+  - apache-python
+  - nginxruby
   - nginxphp
   - nginxphp-dockerized
-  - tomcat
-  - tomcat7
   - tomcat6
+  - tomcat7
+  - tomcat8
+  - tomcat85
+  - tomcat9
+  - tomcat
   - tomee
   - tomee-dockerized
   - litespeedphp
