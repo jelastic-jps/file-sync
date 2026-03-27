@@ -143,7 +143,7 @@ actions:
       [ ${this.syncPassword} ] && password=${this.syncPassword} || password=defaultPassword; echo ${password} > ${this.lsyncdPath}lsyncd/etc/rsyncd.pass; echo "admin:${password}" > ${this.lsyncdPath}/lsyncd/etc/rsyncd.secrets
   - cmd [${this.nodeId}]: |-
       curl -fsS "${baseUrl}scripts/twoEnvs.sh" -o ${this.lsyncdPath}lsyncd/addSecondEnv.sh 2>&1
-      bash -x ${this.lsyncdPath}lsyncd/addSecondEnv.sh "${this.secondEnvAddress}" "${this.settingsPath}" "${this.lsyncdPath}" 2>&1 ${this.lsyncdPath}lsyncd/2Env.log
+      bash -x ${this.lsyncdPath}lsyncd/addSecondEnv.sh "${this.secondEnvAddress}" "${this.settingsPath}" "${this.lsyncdPath}" "${settings.delay}" 2>&1 >> ${this.lsyncdPath}lsyncd/2Env.log
       rm -rf ${this.lsyncdPath}addSecondEnv.sh
   - cmd [${this.nodeId}]: |-
       [ -d '${this.lsyncdPath}${this.settingsPath}' ] && (/usr/bin/lsyncd ${this.lsyncdPath}lsyncd/etc/lsyncd.conf &>>${this.lsyncdPath}lsyncd/var/log/lsyncd_start.log) || echo 0
