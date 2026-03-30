@@ -12,6 +12,7 @@ grep -q "@"${EXT_IP}"/" ${lsyncdPath}/lsyncd/etc/lsyncd.conf || echo "sync {
         target=\"rsync://admin@"${EXT_IP}"/syncmodule\",
 		delay=${syncDelay},
         delete='running',
+		excludeFrom = \"${lsyncdPath}lsyncd/etc/exclude.list\",
 		exclude = {
 		  \"lsyncd/\",
 		  \"lsyncd_tmp/\"
