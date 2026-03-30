@@ -1,8 +1,11 @@
 type: update
+id: file-sync
+name: File Synchronization
+version: '1.1'
 logo: images/icon.png
 homepage: http://docs.jelastic.com/file-synchronization
+description: Lsyncd is a light-weight, live mirror solution used to synchronize app servers. Being wisely coupled with inotify, lsyncd initiates file sync only if it has detected any actual changes in the system. In such a way, the load on CPU is decreased and you do not burn up many resources on processing the synchronization.
 
-version: '1.1'
 baseUrl: https://raw.githubusercontent.com/sych74/file-sync/JE-70232/
 
 targetEditions: any
@@ -30,80 +33,87 @@ targetNodes:
   - llsmp
   - lemp
   - jetty
-description: Lsyncd is a light-weight, live mirror solution used to synchronize app servers. Being wisely coupled with inotify, lsyncd initiates file sync only if it has detected any actual changes in the system. In such a way, the load on CPU is decreased and you do not burn up many resources on processing the synchronization.
-
-name: File Synchronization
-
-id: file-sync
 
 settings:
-  fields:
-  - default: one_env
-    values:
-      one_env:
-        en: One environment synchronization
-      two_envs:
-        en: Two environments synchronization
-    name: optional
-    showIf:
-      one_env:
-      - placeholder: relative to ${WEBROOT} for cp layer or /data for storage
-        name: path
-        caption: Sync path
-        type: string
-        required: false
-      - default: '10'
-        name: delay
-        caption: Sync delay (sec)
-        type: string
-        required: false
-      - caption: Exclude paths
-        name: exclude
-        type: text
-        height: 200
-        required: false
-        default: |
-          # Exclude paths for lsyncd/rsync synchronization
-          # One path per line, relative to sync source directory
-          # Examples:
-          #   ROOT/wp-content/uploads/
-          #   ROOT/wp-config.php
-          #   *.log
-          #   tmp/
+  main:
+    fields:
+      - default: one_env
+        values:
+          one_env:
+            en: One environment synchronization
+          two_envs:
+            en: Two environments synchronization
+        name: optional
+        showIf:
+          one_env:
+          - placeholder: relative to ${WEBROOT} for cp layer or /data for storage
+            name: path
+            caption: Sync path
+            type: string
+            required: false
+          - default: '10'
+            name: delay
+            caption: Sync delay (sec)
+            type: string
+            required: false
+          - caption: Exclude paths
+            name: exclude
+            type: text
+            height: 200
+            required: false
+            default: |
+              # Exclude paths for lsyncd/rsync synchronization
+              # One path per line, relative to sync source directory
+              # Examples:
+              #   ROOT/wp-content/uploads/
+              #   ROOT/wp-config.php
+              #   *.log
+              #   tmp/
 
-      two_envs:
-      - placeholder: relative to ${WEBROOT} for cp layer or /data for storage
-        name: path
-        caption: Sync path
-        type: string
-        required: false
-      - default: '10'
-        name: delay
-        caption: Sync delay (sec)
-        type: string
-        required: false
-      - caption: Exclude paths
-        name: exclude
-        type: text
-        height: 200
-        required: false
-        default: |
-          # Exclude paths for lsyncd/rsync synchronization
-          # One path per line, relative to sync source directory
-          # Examples:
-          #   ROOT/wp-content/uploads/
-          #   ROOT/wp-config.php
-          #   *.log
-          #   tmp/
-      - placeholder: optional
-        name: address
-        caption: IP second environment
-        type: string
-      - placeholder: optional
-        name: password
-        caption: Password
-        type: string
-    type: radio-fieldset
+          two_envs:
+          - placeholder: relative to ${WEBROOT} for cp layer or /data for storage
+            name: path
+            caption: Sync path
+            type: string
+            required: false
+          - default: '10'
+            name: delay
+            caption: Sync delay (sec)
+            type: string
+            required: false
+          - caption: Exclude paths
+            name: exclude
+            type: text
+            height: 200
+            required: false
+            default: |
+              # Exclude paths for lsyncd/rsync synchronization
+              # One path per line, relative to sync source directory
+              # Examples:
+              #   ROOT/wp-content/uploads/
+              #   ROOT/wp-config.php
+              #   *.log
+              #   tmp/
+          - placeholder: optional
+            name: address
+            caption: IP second environment
+            type: string
+          - placeholder: optional
+            name: password
+            caption: Password
+            type: string
+        type: radio-fieldset
+    
+  configure:
+    fields: []
+    onBeforeInit: script: scripts/configureOnBeforeInit.js
+
+buttons:
+- caption: Configure
+  action: configure
+  settings: configure
+  loadingText: Configuring...
+  successText: The lsync/rsync configs have been updated successfully.
 
 onAfterCloneNodes: installRsyncDaemon
 
@@ -118,11 +128,16 @@ onAfterRemoveNode: installRsyncDaemon
 onInstall: installRsyncDaemon
 
 actions:
+  getLsyncdPath:
+  - cmd [${targetNodes.nodeGroup}]: |-
+      [ "${targetNodes.nodeGroup}" == "storage" ] && echo "/data/" || echo "${SERVER_WEBROOT}/"
+  - setGlobals:
+      lsyncdPath: ${response.out}
   removeLsyncd:
+  - getLsyncdPath:
   - cmd [${targetNodes.nodeGroup}]: |-
       killall rsync lsyncd 2>&1
-      [ "${targetNodes.nodeGroup}" == "storage" ] && lsyndPath="/data" || lsyndPath="/var/www/webroot"
-      rm -rf ${lsyndPath}/lsyncd* 2>&1
+      rm -rf ${globals.lsyncdPath}lsyncd* 2>&1
       crontab -l | sed "/lsyncd/d" | crontab -
   - script: "${baseUrl}scripts/firewallRules.js"
     param: uninstall
@@ -130,9 +145,21 @@ actions:
   - script: scripts/firewallRules.js
     param: install
   - script: scripts/installRsyncDaemon.js
+  configure:
+  - getLsyncdPath
+  - cmd [${targetNodes.nodeGroup}]: |-
+      sed -i "s|delay=[0-9]*|delay=${settings.delay}|g" ${globals.lsyncdPath}lsyncd/etc/lsyncd.conf
+      > ${globals.lsyncdPath}lsyncd/etc/exclude.list
+      echo "${settings.exclude}" | while IFS= read -r line; do
+        line=$(echo "$line" | xargs)
+        [[ -z "$line" || "$line" == \#* || "$line" == /* || "$line" == *..* || "$line" =~ [[:cntrl:]\;\|\&\>\<\`\$\(] ]] && continue
+        echo "$line" >> ${globals.lsyncdPath}lsyncd/etc/exclude.list
+      done
+      killall lsyncd 2>&1
+      /usr/bin/lsyncd ${globals.lsyncdPath}lsyncd/etc/lsyncd.conf &>>${globals.lsyncdPath}lsyncd/var/log/lsyncd_start.log
   setupExcludeList:
   - cmd [${this.nodeId}]: |-
-      touch ${this.lsyncdPath}lsyncd/etc/exclude.list
+      > ${this.lsyncdPath}lsyncd/etc/exclude.list
       echo "${settings.exclude}" | while IFS= read -r line; do
         line=$(echo "$line" | xargs)
         [[ -z "$line" || "$line" == \#* || "$line" == /* || "$line" == *..* || "$line" =~ [[:cntrl:]\;\|\&\>\<\`\$\(] ]] && continue
