@@ -31,10 +31,7 @@ if (envInfo.result == 0 && envInfo.nodes) {
 }
 
 function readNodeFile(path) {
-  if (sampleNodeId == null) {
-    return { result: 999, body: null };
-  }
-  return api.env.file.Read(envName, session, String(path), null, nodeGroup || null, sampleNodeId);
+  return api.env.file.Read(envName, session, String(path), null, nodeGroup, sampleNodeId);
 }
 
 confPath = lp + "lsyncd/etc/lsyncd.conf";
