@@ -163,7 +163,7 @@ actions:
       echo -n '' > ${lsyncdPath}lsyncd/etc/exclude.list
       echo "${settings.exclude}" | while IFS= read -r line; do
         line=$(echo "$line" | xargs)
-        [[ -z "$line" || "$line" == \#* || "$line" == /* || "$line" == *..* || "$line" =~ [[:cntrl:]\;\|\&\>\<\`\$\(] ]] && continue
+        [[ -z "$line" || "$line" == \#* || "$line" == /* || "$line" == *..* || "$line" =~ [\;\|\&\>\<\`\$\(] ]] && continue
         echo "$line" >> ${lsyncdPath}lsyncd/etc/exclude.list
       done
   
