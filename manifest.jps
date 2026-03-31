@@ -133,6 +133,7 @@ actions:
       [ "${targetNodes.nodeGroup}" == "storage" ] && echo "/data/" || echo "${SERVER_WEBROOT}/"
   - setGlobals:
       lsyncdPath: ${response.out}
+  
   removeLsyncd:
   - getLsyncdPath:
   - cmd [${targetNodes.nodeGroup}]: |-
@@ -141,30 +142,31 @@ actions:
       crontab -l | sed "/lsyncd/d" | crontab -
   - script: "${baseUrl}scripts/firewallRules.js"
     param: uninstall
+  
   installRsyncDaemon:
   - script: scripts/firewallRules.js
     param: install
   - script: scripts/installRsyncDaemon.js
+  
   configure:
   - getLsyncdPath
+  - setupExcludeList:
+      execOn: ${targetNodes.nodeGroup}
+      lsyncdPath: ${globals.lsyncdPath}
   - cmd [${targetNodes.nodeGroup}]: |-
       sed -i "s|delay=[0-9]*|delay=${settings.delay}|g" ${globals.lsyncdPath}lsyncd/etc/lsyncd.conf
-      > ${globals.lsyncdPath}lsyncd/etc/exclude.list
-      echo "${settings.exclude}" | while IFS= read -r line; do
-        line=$(echo "$line" | xargs)
-        [[ -z "$line" || "$line" == \#* || "$line" == /* || "$line" == *..* || "$line" =~ [[:cntrl:]\;\|\&\>\<\`\$\(] ]] && continue
-        echo "$line" >> ${globals.lsyncdPath}lsyncd/etc/exclude.list
-      done
       killall lsyncd 2>&1
       /usr/bin/lsyncd ${globals.lsyncdPath}lsyncd/etc/lsyncd.conf &>>${globals.lsyncdPath}lsyncd/var/log/lsyncd_start.log
+  
   setupExcludeList:
-  - cmd [${this.nodeId}]: |-
-      > ${this.lsyncdPath}lsyncd/etc/exclude.list
+  - cmd [${execOn}]: |-
+      echo -n '' > ${lsyncdPath}lsyncd/etc/exclude.list
       echo "${settings.exclude}" | while IFS= read -r line; do
         line=$(echo "$line" | xargs)
         [[ -z "$line" || "$line" == \#* || "$line" == /* || "$line" == *..* || "$line" =~ [[:cntrl:]\;\|\&\>\<\`\$\(] ]] && continue
-        echo "$line" >> ${this.lsyncdPath}lsyncd/etc/exclude.list
+        echo "$line" >> ${lsyncdPath}lsyncd/etc/exclude.list
       done
+  
   installLsync:
   - cmd [${this.nodeId}]: |-
       grep -a 'AlmaLinux' /etc/system-release && microdnf -y install lsyncd || yum install lsyncd -y;
@@ -198,7 +200,7 @@ actions:
       sed -i "s|_USER|admin|g" ${this.lsyncdPath}lsyncd/etc/rsyncd.secrets
       sed -i "s|_INSTALL_DIRECTORY|${this.lsyncdPath}lsyncd/|g" ${this.lsyncdPath}lsyncd/init.sh
   - setupExcludeList:
-      nodeId: ${this.nodeId}
+      execOn: ${this.nodeId}
       lsyncdPath: ${this.lsyncdPath}
   - cmd [${this.nodeId}]: |-
       cd ${this.lsyncdPath}lsyncd/
