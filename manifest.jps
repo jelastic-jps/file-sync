@@ -84,6 +84,10 @@ onAfterCloneNodes: installRsyncDaemon
 
 onAfterDeploy: installRsyncDaemon
 
+onAfterRedeployContainer[${targetNodes.nodeGroup}]:
+  cmd [${targetNodes.nodeGroup}]: grep -a 'AlmaLinux' /etc/system-release && microdnf -y install lsyncd || yum install lsyncd -y;
+  user: root
+
 onBeforeDeploy:
   cmd [${targetNodes.nodeGroup}]:
     - killall rsync lsyncd  2>&1
